@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.StudentsMapper">
+
+	<resultMap type="com.beans.Students" id="getAll">
+		<id column="stuid" property="stuid" />
+		<result column="stuname" property="stuname" />
+		<result column="stunum" property="stunum" />
+		<result column="sandcid" property="sandcid" />
+		<result column="sex" property="sex" />
+		<result column="address" property="address" />
+		<result column="remark" property="remark" />
+		<result column="photos" property="photos" />
+
+		<association property="classInfo" javaType="com.beans.ClassInfo">
+			<id column="classid" property="classid"></id>
+			<result column="classname" property="classname" />
+			<result column="cnumber" property="cnumber" />
+			<result column="classtecher" property="classtecher" />
+		</association>
+
+	</resultMap>
+	<!-- 查询所有的学生 -->
+	<select id="querystudent" resultMap="getAll">
+		select classinfo.classname,students.* from classinfo,students where
+		students.sandcid=classinfo.classid 
+		<if test="studentsCustom!=null">
+			<if test="studentsCustom.stuname!=null and studentsCustom.stuname!=''">
+				and stuname like '%${studentsCustom.stuname}%'
+			</if>
+			<if test="studentsCustom.sandcid!=null and studentsCustom.sandcid!=''">
+				and sandcid=#{studentsCustom.sandcid}
+			</if>
+			<!-- 根据学生编号查找学生 -->
+			<if test="studentsCustom.stuid!=null and studentsCustom.stuid!=''">
+				and students.stuid=#{stuid}
+			</if>
+		</if>
+	</select>
+	<!-- 根据Id查询 -->
+	<select id="addstudents" parameterType="int"
+		resultType="com.beans.StudentsCustom">
+		select classinfo.classname,students.* from classinfo,students where
+		students.sandcid=classinfo.classid and students.stuid=#{stuid}
+	</select>
+
+	<!-- 根据id删除学生 -->
+	<delete id="deletestudent" parameterType="int">
+		delete from students where stuid=#{id}
+	</delete>
+	<!-- 新增 -->
+	<insert id="addnewstudent" parameterType="com.beans.StudentsQueryVo">
+		insert into students
+		values(0,#{studentsCustom.stuname},#{studentsCustom.stunum},#{studentsCustom.sandcid},#{studentsCustom.sex},#{studentsCustom.address},#{studentsCustom.remark},#{studentsCustom.photos})
+	</insert>
+
+	<!-- 修改 -->
+	<update id="updstnew" parameterType="com.beans.StudentsQueryVo">
+		update students set stuname=#{studentsCustom.stuname},stunum=#{studentsCustom.stunum},sandcid=#{studentsCustom.sandcid},sex=#{studentsCustom.sex},address=#{studentsCustom.address},remark=#{studentsCustom.remark},photos=#{studentsCustom.photos} where stuid=#{studentsCustom.stuid}
+	</update>
+</mapper>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.ClassInfoMapper">
+
+
+	<!-- 查询所有 -->
+	<select id="AllQueryClass" resultType="com.beans.ClassInfoCustom">
+		select * from ClassInfo
+	</select>
+	<!-- 根据名字模糊查询 -->
+	<select id="findClassList" parameterType="com.beans.ClassInfoQueryVo"
+		resultType="com.beans.ClassInfoCustom">
+		select * from ClassInfo
+		<if test="classinfocustom!=null">
+			<where>
+				classname like '%${classinfocustom.classname}%'
+			</where>
+		</if>
+	</select>
+
+	<!-- 添加班级 -->
+	<select id="addClass" parameterType="com.beans.ClassInfoQueryVo">
+		insert into classinfo
+		values(0,#{classinfocustom.classname},#{classinfocustom.cnumber},#{classinfocustom.classtecher});
+	</select>
+	<!-- 删除学生信息 -->
+	<delete id="deletestudentandclass" parameterType="int">
+		delete from students where sandcid=#{id}
+	</delete>
+	<!-- 删除班级信息 -->
+	<delete id="deleteclass" parameterType="int">
+		delete from classinfo where classid=#{id}
+	</delete>
+	<!-- 根据id查询班级 -->
+	<select id="queryclass" parameterType="int"
+		resultType="com.beans.ClassInfoCustom">
+		select * from classinfo where classid=#{id}
+	</select>
+	<!-- 根据id修改班级 -->
+	<update id="updateinfo" parameterType="com.beans.ClassInfoQueryVo">
+		update classinfo set
+		classname=#{classinfocustom.classname},cnumber=#{classinfocustom.cnumber},classtecher=#{classinfocustom.classtecher}
+		where classid=#{classinfocustom.classid}
+	</update>
+</mapper>
